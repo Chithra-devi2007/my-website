@@ -1,1221 +1,748 @@
-/* =====================================================
-   KUTTY CHAT 💕
-   Frontend Chat Application
-===================================================== */
-
-
-/* ================= VARIABLES ================= */
-
-let currentUser = "";
-let currentChat = "";
-let recording = false;
-let mediaRecorder = null;
-let audioChunks = [];
+/* =========================
+   LOGIN
+========================= */
 
 const APP_PASSWORD = "chithu2007";
 
+let enteredPassword = "";
+let currentChat = "";
 
-/* ================= LOGIN ================= */
+const loginPage = document.getElementById("loginPage");
+const chatPage = document.getElementById("chatPage");
+const passwordDisplay = document.getElementById("passwordDisplay");
+const loginMessage = document.getElementById("loginMessage");
+
+
+function pressNumber(number) {
+
+    if (enteredPassword.length >= 20) {
+        return;
+    }
+
+    enteredPassword += number;
+
+    updatePasswordDisplay();
+}
+
+
+function updatePasswordDisplay() {
+
+    if (enteredPassword.length === 0) {
+
+        passwordDisplay.textContent = "Enter password";
+
+        passwordDisplay.parentElement.classList.remove("active");
+
+        return;
+    }
+
+    passwordDisplay.textContent =
+        "•".repeat(enteredPassword.length);
+
+    passwordDisplay.parentElement.classList.add("active");
+}
+
+
+function clearPassword() {
+
+    enteredPassword = "";
+
+    updatePasswordDisplay();
+}
+
+
+function backspace() {
+
+    enteredPassword =
+        enteredPassword.slice(0, -1);
+
+    updatePasswordDisplay();
+}
+
 
 function login() {
 
-  const username =
-    document.getElementById("loginUsername").value.trim();
+    const username =
+        document.getElementById("username").value.trim();
 
-  const password =
-    document.getElementById("loginPassword").value;
+    if (username === "") {
 
-  const error =
-    document.getElementById("loginError");
+        loginMessage.textContent =
+            "Please enter your username 💗";
 
-
-  if (!username) {
-
-    error.textContent = "Please enter username 💕";
-    return;
-  }
+        return;
+    }
 
 
-  if (password !== APP_PASSWORD) {
+    if (enteredPassword !== APP_PASSWORD) {
 
-    error.textContent = "Wrong password ❌";
-    return;
-  }
+        loginMessage.textContent =
+            "Wrong password 🥺 Try again!";
 
+        enteredPassword = "";
 
-  currentUser = username;
+        updatePasswordDisplay();
 
-  localStorage.setItem(
-    "kuttyChatUser",
-    username
-  );
+        return;
+    }
 
 
-  document
-    .getElementById("loginPage")
-    .classList.add("hidden");
-
-  document
-    .getElementById("app")
-    .classList.remove("hidden");
+    localStorage.setItem(
+        "chatUsername",
+        username
+    );
 
 
-  document.getElementById("myName")
-    .textContent = username;
+    document.getElementById(
+        "currentUsername"
+    ).textContent = username;
 
+
+    loginPage.style.display = "none";
+
+    chatPage.style.display = "flex";
+
+    loginMessage.textContent = "";
 }
 
 
-/* ================= AUTO LOGIN ================= */
+/* ENTER KEY */
 
-window.addEventListener("load", () => {
+document
+    .getElementById("username")
+    .addEventListener("keydown", function(event) {
 
-  const savedUser =
-    localStorage.getItem("kuttyChatUser");
+        if (event.key === "Enter") {
+            login();
+        }
 
-  if (savedUser) {
-
-    currentUser = savedUser;
-
-    document
-      .getElementById("loginPage")
-      .classList.add("hidden");
-
-    document
-      .getElementById("app")
-      .classList.remove("hidden");
-
-    document.getElementById("myName")
-      .textContent = savedUser;
-  }
-
-});
+    });
 
 
-/* ================= PASSWORD ================= */
+/* =========================
+   CHAT
+========================= */
 
-function togglePassword() {
+function openChat(name) {
 
-  const input =
-    document.getElementById("loginPassword");
+    currentChat = name;
 
-  input.type =
-    input.type === "password"
-      ? "text"
-      : "password";
+    document.getElementById(
+        "chatName"
+    ).textContent = name;
+
+
+    document.getElementById(
+        "chatStatus"
+    ).textContent =
+        name === "Kavin"
+            ? "offline"
+            : "online";
+
+
+    chatPage.classList.add("chat-open");
+
+    loadMessages();
 }
 
-
-/* ================= LOGOUT ================= */
-
-function logout() {
-
-  localStorage.removeItem("kuttyChatUser");
-
-  location.reload();
-}
-
-
-/* ================= OPEN CHAT ================= */
-
-function openChat(name, avatar) {
-
-  currentChat = name;
-
-  document
-    .getElementById("chatName")
-    .textContent = name;
-
-
-  document
-    .getElementById("chatAvatar")
-    .textContent = avatar;
-
-
-  const onlineUsers =
-    ["Anu", "Kavin", "Friends Group"];
-
-  document
-    .getElementById("chatStatus")
-    .textContent =
-      onlineUsers.includes(name)
-        ? "Online"
-        : "Offline";
-
-
-  document
-    .getElementById("app")
-    .classList.add("chat-open");
-
-
-  loadMessages();
-
-}
-
-
-/* ================= CLOSE CHAT ================= */
 
 function closeChat() {
 
-  document
-    .getElementById("app")
-    .classList.remove("chat-open");
+    chatPage.classList.remove("chat-open");
 
-  currentChat = "";
-
+    currentChat = "";
 }
 
-
-/* ================= MESSAGE STORAGE ================= */
-
-function getStorageKey() {
-
-  return `chat_${currentUser}_${currentChat}`;
-}
-
-
-function getMessages() {
-
-  try {
-
-    return JSON.parse(
-      localStorage.getItem(
-        getStorageKey()
-      )
-    ) || [];
-
-  } catch {
-
-    return [];
-
-  }
-
-}
-
-
-function saveMessages(messages) {
-
-  localStorage.setItem(
-    getStorageKey(),
-    JSON.stringify(messages)
-  );
-
-}
-
-
-/* ================= LOAD MESSAGES ================= */
-
-function loadMessages() {
-
-  const box =
-    document.getElementById("messages");
-
-  box.innerHTML = "";
-
-  const messages = getMessages();
-
-
-  if (messages.length === 0) {
-
-    box.innerHTML = `
-      <div class="welcome-message">
-        <div class="big-teddy">🧸</div>
-        <h2>Say Hello 💕</h2>
-        <p>Start chatting with ${currentChat}</p>
-      </div>
-    `;
-
-    return;
-  }
-
-
-  messages.forEach((msg, index) => {
-
-    renderMessage(msg, index);
-
-  });
-
-
-  scrollMessages();
-
-}
-
-
-/* ================= RENDER MESSAGE ================= */
-
-function renderMessage(msg, index) {
-
-  const box =
-    document.getElementById("messages");
-
-
-  const div =
-    document.createElement("div");
-
-
-  div.className =
-    `message ${msg.sender === currentUser ? "sent" : "received"}`;
-
-
-  let content = "";
-
-
-  if (msg.type === "image") {
-
-    content = `
-      <img
-        src="${msg.content}"
-        alt="sent image"
-      >
-    `;
-
-  } else {
-
-    content =
-      escapeHTML(msg.content);
-
-  }
-
-
-  div.innerHTML = `
-
-    ${content}
-
-    <span class="message-time">
-      ${msg.time}
-      ${msg.sender === currentUser ? "✓✓" : ""}
-    </span>
-
-    <div class="message-actions">
-
-      <button onclick="reactMessage(${index},'❤️')">
-        ❤️
-      </button>
-
-      <button onclick="deleteMessage(${index})">
-        🗑️
-      </button>
-
-    </div>
-
-    ${
-      msg.reaction
-        ? `<span class="reaction">${msg.reaction}</span>`
-        : ""
-    }
-
-  `;
-
-
-  box.appendChild(div);
-}
-
-
-/* ================= SEND MESSAGE ================= */
-
-function sendMessage() {
-
-  const input =
-    document.getElementById("messageInput");
-
-  const text =
-    input.value.trim();
-
-
-  if (!text || !currentChat) return;
-
-
-  const messages =
-    getMessages();
-
-
-  messages.push({
-
-    sender: currentUser,
-
-    content: text,
-
-    type: "text",
-
-    time: getTime(),
-
-    reaction: ""
-
-  });
-
-
-  saveMessages(messages);
-
-
-  input.value = "";
-
-  loadMessages();
-
-
-  fakeReply(text);
-
-}
-
-
-/* ================= ENTER ================= */
 
 function handleEnter(event) {
 
-  if (event.key === "Enter") {
+    if (event.key === "Enter") {
 
-    event.preventDefault();
+        event.preventDefault();
 
-    sendMessage();
-
-  }
-
+        sendMessage();
+    }
 }
 
 
-/* ================= FAKE REPLY ================= */
+/* SEND MESSAGE */
 
-function fakeReply(text) {
+function sendMessage() {
 
-  const typing =
-    document.getElementById("typing");
+    const input =
+        document.getElementById("messageInput");
 
+    const text = input.value.trim();
 
-  typing.classList.remove("hidden");
-
-
-  setTimeout(() => {
-
-    typing.classList.add("hidden");
+    if (!text || !currentChat) {
+        return;
+    }
 
 
-    const messages =
-      getMessages();
+    const key =
+        "messages_" + currentChat;
+
+
+    let messages =
+        JSON.parse(
+            localStorage.getItem(key) || "[]"
+        );
 
 
     messages.push({
 
-      sender: currentChat,
+        text: text,
 
-      content: getAutoReply(text),
+        mine: true,
 
-      type: "text",
-
-      time: getTime(),
-
-      reaction: ""
+        time: getTime()
 
     });
 
 
-    saveMessages(messages);
+    localStorage.setItem(
+        key,
+        JSON.stringify(messages)
+    );
+
+
+    input.value = "";
 
     loadMessages();
 
-  }, 1200);
-
+    fakeReply();
 }
 
 
-function getAutoReply(text) {
+/* LOAD MESSAGES */
 
-  const msg =
-    text.toLowerCase();
+function loadMessages() {
 
+    const container =
+        document.getElementById("messages");
 
-  if (
-    msg.includes("hi") ||
-    msg.includes("hello")
-  ) {
-    return "Hii 💕😊";
-  }
+    if (!currentChat) {
+        return;
+    }
 
 
-  if (msg.includes("how are you")) {
-    return "I'm good 🥰 How are you?";
-  }
+    const key =
+        "messages_" + currentChat;
 
 
-  if (msg.includes("bye")) {
-    return "Bye bye 🧸💕";
-  }
+    const messages =
+        JSON.parse(
+            localStorage.getItem(key) || "[]"
+        );
 
 
-  const replies = [
-
-    "Okayyy 💕",
-
-    "Super 😍",
-
-    "Haha 😂",
-
-    "Niceee ✨",
-
-    "Really? 🥹",
-
-    "Aww 🧸💜",
-
-    "Seri seri 😄"
-
-  ];
+    container.innerHTML = "";
 
 
-  return replies[
-    Math.floor(
-      Math.random() * replies.length
-    )
-  ];
+    messages.forEach((message, index) => {
+
+        const div =
+            document.createElement("div");
+
+
+        div.className =
+            "message " +
+            (message.mine ? "mine" : "");
+
+
+        div.innerHTML =
+            escapeHTML(message.text) +
+            `<span class="message-time">
+                ${message.time}
+            </span>`;
+
+
+        div.onclick = function() {
+
+            if (message.mine) {
+
+                if (
+                    confirm(
+                        "Delete this message?"
+                    )
+                ) {
+
+                    messages.splice(index, 1);
+
+                    localStorage.setItem(
+                        key,
+                        JSON.stringify(messages)
+                    );
+
+                    loadMessages();
+                }
+
+            }
+
+        };
+
+
+        container.appendChild(div);
+
+    });
+
+
+    container.scrollTop =
+        container.scrollHeight;
 }
 
 
-/* ================= TIME ================= */
+/* FAKE REPLY */
+
+function fakeReply() {
+
+    if (currentChat === "Friends Group") {
+        return;
+    }
+
+
+    const chatAtSend = currentChat;
+
+
+    document.getElementById(
+        "typing"
+    ).style.display = "block";
+
+
+    setTimeout(function() {
+
+        if (currentChat !== chatAtSend) {
+            return;
+        }
+
+
+        const replies = [
+
+            "Hii 💗",
+
+            "How are you? 🧸",
+
+            "Aww cutee ✨",
+
+            "11:11 make a wish 🌸",
+
+            "Okayyy 💕",
+
+            "Hehe 😍"
+
+        ];
+
+
+        const reply =
+            replies[
+                Math.floor(
+                    Math.random() *
+                    replies.length
+                )
+            ];
+
+
+        const key =
+            "messages_" + chatAtSend;
+
+
+        let messages =
+            JSON.parse(
+                localStorage.getItem(key) || "[]"
+            );
+
+
+        messages.push({
+
+            text: reply,
+
+            mine: false,
+
+            time: getTime()
+
+        });
+
+
+        localStorage.setItem(
+            key,
+            JSON.stringify(messages)
+        );
+
+
+        document.getElementById(
+            "typing"
+        ).style.display = "none";
+
+
+        loadMessages();
+
+    }, 1200);
+}
+
+
+/* TIME */
 
 function getTime() {
 
-  return new Date()
-    .toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-
+    return new Date().toLocaleTimeString(
+        [],
+        {
+            hour: "2-digit",
+            minute: "2-digit"
+        }
+    );
 }
 
 
-/* ================= IMAGE ================= */
+/* HTML SECURITY */
+
+function escapeHTML(text) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent = text;
+
+    return div.innerHTML;
+}
+
+
+/* =========================
+   IMAGE
+========================= */
 
 function sendImage(event) {
 
-  const file =
-    event.target.files[0];
+    const file =
+        event.target.files[0];
 
-  if (!file || !currentChat) return;
-
-
-  if (!file.type.startsWith("image/")) {
-
-    alert("Please select an image 📷");
-    return;
-
-  }
+    if (!file || !currentChat) {
+        return;
+    }
 
 
-  const reader =
-    new FileReader();
+    const reader =
+        new FileReader();
 
 
-  reader.onload = function(e) {
+    reader.onload = function(e) {
 
-    const messages =
-      getMessages();
-
-
-    messages.push({
-
-      sender: currentUser,
-
-      content: e.target.result,
-
-      type: "image",
-
-      time: getTime(),
-
-      reaction: ""
-
-    });
+        const container =
+            document.getElementById("messages");
 
 
-    saveMessages(messages);
-
-    loadMessages();
-
-  };
+        const img =
+            document.createElement("img");
 
 
-  reader.readAsDataURL(file);
+        img.src = e.target.result;
 
-  event.target.value = "";
+        img.style.maxWidth = "250px";
 
+        img.style.borderRadius = "15px";
+
+
+        const div =
+            document.createElement("div");
+
+
+        div.className =
+            "message mine";
+
+
+        div.appendChild(img);
+
+
+        container.appendChild(div);
+
+        container.scrollTop =
+            container.scrollHeight;
+    };
+
+
+    reader.readAsDataURL(file);
+
+    event.target.value = "";
 }
 
 
-/* ================= EMOJI ================= */
-
-function toggleEmoji() {
-
-  document
-    .getElementById("emojiPicker")
-    .classList.toggle("hidden");
-
-}
-
-
-function addEmoji(emoji) {
-
-  const input =
-    document.getElementById("messageInput");
-
-
-  input.value += emoji;
-
-  input.focus();
-
-}
-
-
-/* ================= TYPING ================= */
+/* =========================
+   TYPING
+========================= */
 
 let typingTimer;
 
+
 function showTyping() {
 
-  if (!currentChat) return;
+    clearTimeout(typingTimer);
 
 
-  const typing =
-    document.getElementById("typing");
+    document.getElementById(
+        "typing"
+    ).style.display = "block";
 
 
-  typing.classList.remove("hidden");
+    typingTimer = setTimeout(function() {
 
-
-  clearTimeout(typingTimer);
-
-
-  typingTimer =
-    setTimeout(() => {
-
-      typing.classList.add("hidden");
+        document.getElementById(
+            "typing"
+        ).style.display = "none";
 
     }, 1000);
-
 }
 
 
-/* ================= DELETE MESSAGE ================= */
-
-function deleteMessage(index) {
-
-  const messages =
-    getMessages();
-
-
-  if (!confirm("Delete this message?")) {
-    return;
-  }
-
-
-  messages.splice(index, 1);
-
-  saveMessages(messages);
-
-  loadMessages();
-
-}
-
-
-/* ================= REACTION ================= */
-
-function reactMessage(index, reaction) {
-
-  const messages =
-    getMessages();
-
-
-  messages[index].reaction =
-    reaction;
-
-
-  saveMessages(messages);
-
-  loadMessages();
-
-}
-
-
-/* ================= SCROLL ================= */
-
-function scrollMessages() {
-
-  const box =
-    document.getElementById("messages");
-
-  box.scrollTop =
-    box.scrollHeight;
-
-}
-
-
-/* ================= SEARCH ================= */
+/* =========================
+   SEARCH
+========================= */
 
 function searchUsers() {
 
-  const search =
+    const search =
+        document
+            .getElementById("searchUser")
+            .value
+            .toLowerCase();
+
+
     document
-      .getElementById("searchInput")
-      .value
-      .toLowerCase();
+        .querySelectorAll(".user")
+        .forEach(function(user) {
 
+            user.style.display =
+                user.textContent
+                    .toLowerCase()
+                    .includes(search)
+                        ? "flex"
+                        : "none";
 
-  document
-    .querySelectorAll(".chat-user")
-    .forEach(user => {
-
-      const name =
-        user.dataset.name || "";
-
-
-      user.style.display =
-        name.toLowerCase()
-          .includes(search)
-          ? "flex"
-          : "none";
-
-    });
-
+        });
 }
 
 
-/* ================= GROUP ================= */
-
-function createGroup() {
-
-  const name =
-    prompt("Enter group name 👥");
-
-
-  if (!name || !name.trim()) {
-    return;
-  }
-
-
-  const groupName =
-    name.trim();
-
-
-  const groupList =
-    document.getElementById("groupList");
-
-
-  const div =
-    document.createElement("div");
-
-
-  div.className = "chat-user";
-
-  div.dataset.name =
-    groupName;
-
-
-  div.innerHTML = `
-
-    <div class="avatar pink">
-      👥
-    </div>
-
-    <div class="user-info">
-
-      <b>${escapeHTML(groupName)}</b>
-
-      <span class="status online">
-        New group
-      </span>
-
-    </div>
-
-  `;
-
-
-  div.onclick = () =>
-    openChat(groupName, "👥");
-
-
-  groupList.appendChild(div);
-
-
-  alert(
-    `${groupName} group created successfully 💕`
-  );
-
-}
-
-
-/* ================= OPTIONS ================= */
+/* =========================
+   OPTIONS
+========================= */
 
 function toggleOptions() {
 
-  document
-    .getElementById("optionsMenu")
-    .classList.toggle("hidden");
+    const menu =
+        document.getElementById("optionsMenu");
 
+
+    menu.style.display =
+        menu.style.display === "block"
+            ? "none"
+            : "block";
 }
 
-
-/* ================= PROFILE ================= */
 
 function editProfile() {
 
-  const name =
-    prompt(
-      "Enter new username:",
-      currentUser
-    );
+    const newName =
+        prompt(
+            "Enter your new username:"
+        );
 
 
-  if (!name || !name.trim()) {
-    return;
-  }
-
-
-  currentUser =
-    name.trim();
-
-
-  localStorage.setItem(
-    "kuttyChatUser",
-    currentUser
-  );
-
-
-  document
-    .getElementById("myName")
-    .textContent = currentUser;
-
-
-  toggleOptions();
-
-}
-
-
-function changePicture() {
-
-  document
-    .getElementById("profileInput")
-    .click();
-
-}
-
-
-function changeProfileImage(event) {
-
-  const file =
-    event.target.files[0];
-
-  if (!file) return;
-
-
-  const reader =
-    new FileReader();
-
-
-  reader.onload = function(e) {
-
-    const avatar =
-      document.getElementById(
-        "profileAvatar"
-      );
-
-
-    avatar.style.backgroundImage =
-      `url(${e.target.result})`;
-
-    avatar.style.backgroundSize =
-      "cover";
-
-    avatar.style.backgroundPosition =
-      "center";
-
-    avatar.textContent = "";
-
-  };
-
-
-  reader.readAsDataURL(file);
-
-}
-
-
-/* ================= DARK MODE ================= */
-
-function toggleDarkMode() {
-
-  document
-    .body
-    .classList.toggle("dark");
-
-
-  localStorage.setItem(
-    "darkMode",
-    document.body.classList.contains("dark")
-  );
-
-}
-
-
-/* LOAD DARK MODE */
-
-if (
-  localStorage.getItem("darkMode") === "true"
-) {
-
-  document.body.classList.add("dark");
-
-}
-
-
-/* ================= NOTIFICATION ================= */
-
-function toggleNotifications() {
-
-  if (
-    "Notification" in window
-  ) {
-
-    if (
-      Notification.permission === "granted"
-    ) {
-
-      alert("Notifications are already enabled 🔔");
-
-    } else {
-
-      Notification.requestPermission();
-
+    if (!newName) {
+        return;
     }
 
-  } else {
 
-    alert(
-      "Notifications are not supported."
+    document.getElementById(
+        "currentUsername"
+    ).textContent = newName;
+
+
+    localStorage.setItem(
+        "chatUsername",
+        newName
     );
 
-  }
 
+    document.getElementById(
+        "optionsMenu"
+    ).style.display = "none";
 }
 
 
-/* ================= CHANGE PASSWORD ================= */
+function createGroup() {
 
-function changePassword() {
-
-  const oldPassword =
-    prompt("Enter old password:");
-
-  if (oldPassword !== APP_PASSWORD) {
-
-    alert("Wrong old password ❌");
-
-    return;
-
-  }
+    const group =
+        prompt(
+            "Enter group name:"
+        );
 
 
-  alert(
-    "For this demo, password is fixed as chithu2007."
-  );
+    if (group) {
 
-}
+        alert(
+            "Group '" +
+            group +
+            "' created 💗"
+        );
 
-
-/* ================= CALL ================= */
-
-function startCall() {
-
-  if (!currentChat) {
-
-    alert("Select a chat first.");
-
-    return;
-
-  }
-
-
-  alert(
-    `📞 Calling ${currentChat}...`
-  );
-
-}
-
-
-function startVideo() {
-
-  if (!currentChat) {
-
-    alert("Select a chat first.");
-
-    return;
-
-  }
-
-
-  alert(
-    `📹 Video calling ${currentChat}...`
-  );
-
-}
-
-
-/* ================= CHAT OPTIONS ================= */
-
-function toggleChatOptions() {
-
-  document
-    .getElementById("chatOptions")
-    .classList.toggle("hidden");
-
-}
-
-
-function closeChatOptions() {
-
-  document
-    .getElementById("chatOptions")
-    .classList.add("hidden");
-
+    }
 }
 
 
 function clearChat() {
 
-  if (!currentChat) return;
+    if (!currentChat) {
+        return;
+    }
 
-
-  if (
-    confirm(
-      "Clear all messages?"
-    )
-  ) {
 
     localStorage.removeItem(
-      getStorageKey()
+        "messages_" + currentChat
     );
+
 
     loadMessages();
-
-  }
-
-
-  closeChatOptions();
-
 }
 
 
-function blockUser() {
+function toggleDarkMode() {
 
-  alert(
-    `${currentChat} blocked 🚫`
-  );
-
-  closeChatOptions();
-
-}
-
-
-/* ================= VOICE RECORDING ================= */
-
-async function toggleRecording() {
-
-  const button =
-    document.getElementById("voiceBtn");
-
-
-  if (recording) {
-
-    if (mediaRecorder) {
-      mediaRecorder.stop();
-    }
-
-    recording = false;
-
-    button.textContent = "🎤";
-
-    return;
-
-  }
-
-
-  if (
-    !navigator.mediaDevices ||
-    !navigator.mediaDevices.getUserMedia
-  ) {
-
-    alert(
-      "Voice recording is not supported in this browser."
+    document.body.classList.toggle(
+        "dark"
     );
-
-    return;
-
-  }
+}
 
 
-  try {
+/* =========================
+   VOICE
+========================= */
 
-    const stream =
-      await navigator.mediaDevices
-        .getUserMedia({
-          audio: true
-        });
+function startVoice() {
 
+    if (!navigator.mediaDevices) {
 
-    mediaRecorder =
-      new MediaRecorder(stream);
-
-
-    audioChunks = [];
-
-
-    mediaRecorder.ondataavailable =
-      event => {
-
-        if (event.data.size > 0) {
-
-          audioChunks.push(
-            event.data
-          );
-
-        }
-
-      };
-
-
-    mediaRecorder.onstop =
-      () => {
-
-        const audioBlob =
-          new Blob(
-            audioChunks,
-            {
-              type: "audio/webm"
-            }
-          );
-
-
-        const audioURL =
-          URL.createObjectURL(
-            audioBlob
-          );
-
-
-        const messages =
-          getMessages();
-
-
-        messages.push({
-
-          sender: currentUser,
-
-          content: audioURL,
-
-          type: "audio",
-
-          time: getTime(),
-
-          reaction: ""
-
-        });
-
-
-        saveMessages(messages);
-
-        renderAudioMessage(
-          audioURL
+        alert(
+            "Voice recording is not supported."
         );
 
-
-        stream
-          .getTracks()
-          .forEach(track =>
-            track.stop()
-          );
-
-      };
-
-
-    mediaRecorder.start();
-
-    recording = true;
-
-    button.textContent = "⏹️";
-
-
-  } catch (error) {
-
-    alert(
-      "Microphone permission denied 🎤"
-    );
-
-  }
-
-}
-
-
-/* ================= AUDIO MESSAGE ================= */
-
-function renderAudioMessage(url) {
-
-  const box =
-    document.getElementById("messages");
-
-
-  const div =
-    document.createElement("div");
-
-
-  div.className =
-    "message sent";
-
-
-  div.innerHTML = `
-
-    <audio controls src="${url}">
-    </audio>
-
-    <span class="message-time">
-      ${getTime()} ✓✓
-    </span>
-
-  `;
-
-
-  box.appendChild(div);
-
-  scrollMessages();
-
-}
-
-
-/* ================= ESCAPE HTML ================= */
-
-function escapeHTML(text) {
-
-  const div =
-    document.createElement("div");
-
-  div.textContent = text;
-
-  return div.innerHTML;
-
-}
-
-
-/* ================= CLOSE POPUPS ================= */
-
-document.addEventListener(
-  "click",
-  function(event) {
-
-    const emoji =
-      document.getElementById(
-        "emojiPicker"
-      );
-
-    if (
-      emoji &&
-      !emoji.contains(event.target) &&
-      !event.target.closest(".input-icon")
-    ) {
-
-      emoji.classList.add("hidden");
-
+        return;
     }
 
-  }
+
+    navigator.mediaDevices
+        .getUserMedia({
+            audio: true
+        })
+        .then(function(stream) {
+
+            const recorder =
+                new MediaRecorder(stream);
+
+
+            let chunks = [];
+
+
+            recorder.ondataavailable =
+                function(e) {
+
+                    chunks.push(e.data);
+
+                };
+
+
+            recorder.onstop =
+                function() {
+
+                    stream
+                        .getTracks()
+                        .forEach(
+                            track =>
+                                track.stop()
+                        );
+
+                    alert(
+                        "Voice recorded 🎙️"
+                    );
+
+                };
+
+
+            recorder.start();
+
+
+            setTimeout(function() {
+
+                recorder.stop();
+
+            }, 3000);
+
+        })
+        .catch(function() {
+
+            alert(
+                "Microphone permission denied."
+            );
+
+        });
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+function logout() {
+
+    localStorage.removeItem(
+        "chatUsername"
+    );
+
+
+    chatPage.style.display = "none";
+
+    loginPage.style.display = "flex";
+
+
+    enteredPassword = "";
+
+    document.getElementById(
+        "username"
+    ).value = "";
+
+
+    updatePasswordDisplay();
+
+
+    document.getElementById(
+        "optionsMenu"
+    ).style.display = "none";
+}
+
+
+/* AUTO LOGIN */
+
+window.addEventListener(
+    "load",
+    function() {
+
+        const savedUser =
+            localStorage.getItem(
+                "chatUsername"
+            );
+
+
+        if (savedUser) {
+
+            document.getElementById(
+                "currentUsername"
+            ).textContent =
+                savedUser;
+
+            loginPage.style.display =
+                "none";
+
+            chatPage.style.display =
+                "flex";
+        }
+
+    }
 );
