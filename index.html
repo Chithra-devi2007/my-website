@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kutty Chat 🧸</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<section id="loginPage" class="login-page">
+    <div class="login-card">
+        <div class="teddy">🧸</div>
+
+        <h1>Kutty Chat</h1>
+        <p class="subtitle">Cute chatting space 💜</p>
+
+        <input id="username" type="text" placeholder="Username">
+
+        <input id="password" type="password" placeholder="Password">
+
+        <button class="main-btn" onclick="login()">Login 💜</button>
+
+        <p id="loginError" class="error"></p>
+
+        <p class="small">
+            Password: <b>chithu2007</b>
+        </p>
+    </div>
+</section>
+
+
+<!-- CHAT APP -->
+<section id="chatApp" class="chat-app hidden">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="profile-top">
+            <div class="avatar">🧸</div>
+
+            <div>
+                <h3 id="profileName">User</h3>
+                <span class="online">
+                    ● Online
+                </span>
+            </div>
+
+            <button class="icon-btn" onclick="openOptions()">⋮</button>
+        </div>
+
+        <div class="search-box">
+            🔍
+            <input
+                id="searchUser"
+                type="text"
+                placeholder="Search users..."
+                oninput="searchUsers()"
+            >
+        </div>
+
+        <div class="side-title">
+            <span>Chats</span>
+            <button onclick="createGroup()">＋ Group</button>
+        </div>
+
+        <div id="userList">
+
+            <div class="user-item active" onclick="openChat('Priya')">
+                <div class="avatar pink">P</div>
+
+                <div class="user-info">
+                    <b>Priya</b>
+                    <span>Hey! 😊</span>
+                </div>
+
+                <span class="status-dot"></span>
+            </div>
+
+            <div class="user-item" onclick="openChat('Arun')">
+                <div class="avatar blue">A</div>
+
+                <div class="user-info">
+                    <b>Arun</b>
+                    <span>Photo 🖼️</span>
+                </div>
+
+                <span class="status-dot"></span>
+            </div>
+
+            <div class="user-item" onclick="openChat('Friends Group')">
+                <div class="avatar purple">👥</div>
+
+                <div class="user-info">
+                    <b>Friends Group</b>
+                    <span>Arun: Hello</span>
+                </div>
+
+                <span class="status-dot"></span>
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- CHAT -->
+    <main class="chat-area">
+
+        <header class="chat-header">
+
+            <div class="chat-user">
+
+                <div id="chatAvatar" class="avatar pink">
+                    P
+                </div>
+
+                <div>
+                    <h3 id="chatName">Priya</h3>
+                    <span id="chatStatus" class="online">
+                        ● Online
+                    </span>
+                </div>
+
+            </div>
+
+            <div class="header-buttons">
+                <button onclick="searchUsers()">🔍</button>
+                <button onclick="openOptions()">⋮</button>
+            </div>
+
+        </header>
+
+
+        <!-- MESSAGES -->
+        <div id="messages" class="messages">
+
+            <div class="message received">
+                <span>Hi! 👋</span>
+                <small>10:30 AM</small>
+            </div>
+
+            <div class="message sent">
+                <span>Hello! 😊</span>
+                <small>10:31 AM ✓✓</small>
+            </div>
+
+            <div class="message received">
+                <span>How are you? 💜</span>
+                <small>10:32 AM</small>
+            </div>
+
+        </div>
+
+
+        <!-- TYPING -->
+        <div id="typing" class="typing hidden">
+            Priya is typing...
+        </div>
+
+
+        <!-- MESSAGE BOX -->
+        <div class="message-area">
+
+            <button class="tool-btn" onclick="toggleEmoji()">
+                😊
+            </button>
+
+            <button class="tool-btn" onclick="sendImage()">
+                🖼️
+            </button>
+
+            <input
+                id="messageInput"
+                type="text"
+                placeholder="Type a message..."
+                onkeydown="handleEnter(event)"
+                oninput="showTyping()"
+            >
+
+            <button
+                class="voice-btn"
+                onclick="recordVoice()"
+            >
+                🎤
+            </button>
+
+            <button
+                class="send-btn"
+                onclick="sendMessage()"
+            >
+                ➤
+            </button>
+
+        </div>
+
+
+        <!-- EMOJI -->
+        <div id="emojiBox" class="emoji-box hidden">
+            <button onclick="addEmoji('❤️')">❤️</button>
+            <button onclick="addEmoji('😂')">😂</button>
+            <button onclick="addEmoji('😍')">😍</button>
+            <button onclick="addEmoji('👍')">👍</button>
+            <button onclick="addEmoji('😊')">😊</button>
+            <button onclick="addEmoji('🥰')">🥰</button>
+            <button onclick="addEmoji('🎉')">🎉</button>
+            <button onclick="addEmoji('🧸')">🧸</button>
+        </div>
+
+    </main>
+
+
+    <!-- OPTIONS -->
+    <div id="optionsMenu" class="options-menu hidden">
+
+        <div class="option-title">
+            <b>Options</b>
+            <button onclick="closeOptions()">×</button>
+        </div>
+
+        <button onclick="showProfile()">
+            👤 My Profile
+        </button>
+
+        <button onclick="createGroup()">
+            👥 Create Group
+        </button>
+
+        <button onclick="changePicture()">
+            🖼️ Profile Picture
+        </button>
+
+        <button onclick="toggleDarkMode()">
+            🌙 Dark Mode
+        </button>
+
+        <button onclick="showNotification()">
+            🔔 Notifications
+        </button>
+
+        <button onclick="changePassword()">
+            🔒 Change Password
+        </button>
+
+        <button onclick="logout()" class="logout">
+            🚪 Logout
+        </button>
+
+    </div>
+
+</section>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
