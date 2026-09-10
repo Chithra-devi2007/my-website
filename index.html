@@ -1,547 +1,411 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enna Login Pannu, Elango 💜</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Work+Sans:wght@400;500;600&display=swap');
 
-    <title>11:11 CHAT ♡</title>
+  :root{
+    --deep: #2b0a4a;
+    --mid: #5b1e9c;
+    --light: #9b5de5;
+    --pink: #f15bb5;
+    --cream: #fdf6ff;
+  }
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+  *{ box-sizing: border-box; margin:0; padding:0; }
 
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  html, body{
+    height:100%;
+    font-family:'Work Sans', sans-serif;
+    background: #0d0518;
+    color: var(--cream);
+    overflow-x: hidden;
+  }
 
-    <link rel="stylesheet" href="style.css">
+  body{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    padding: 24px 12px;
+  }
+
+  /* ---------- phone device frame ---------- */
+  .device{
+    width: 375px;
+    max-width: 100%;
+    height: 780px;
+    max-height: 92vh;
+    background: #120a1e;
+    border-radius: 46px;
+    padding: 14px;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.55), 0 0 0 2px rgba(255,255,255,0.05) inset;
+    position: relative;
+  }
+  .device::before{
+    content:"";
+    position:absolute;
+    top: 22px;
+    left:50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 22px;
+    background:#120a1e;
+    border-radius: 20px;
+    z-index: 5;
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.04) inset;
+  }
+  .device::after{
+    content:"";
+    position:absolute;
+    bottom: 10px;
+    left:50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 4px;
+    background: rgba(255,255,255,0.35);
+    border-radius: 4px;
+    z-index: 5;
+  }
+
+  .phone{
+    width: 100%;
+    height: 100%;
+    border-radius: 32px;
+    background: radial-gradient(circle at 50% 0%, var(--mid) 0%, var(--deep) 65%, #180330 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stage{
+    min-height:100%;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    padding: 32px 20px 60px;
+    position:relative;
+    overflow-y:auto;
+    height:100%;
+  }
+
+  /* ---------- floating + reflected hearts ---------- */
+  .hearts{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:0;
+  }
+  .heart{
+    position:absolute;
+    bottom:-10%;
+    font-size: 22px;
+    opacity:0.55;
+    filter: drop-shadow(0 0 6px rgba(241,91,181,0.5));
+    animation: rise linear infinite;
+  }
+  .heart::after{
+    content:"💜";
+    position:absolute;
+    top: 100%;
+    left:0;
+    transform: scaleY(-1);
+    opacity:0.35;
+    filter: blur(1px);
+  }
+  @keyframes rise{
+    0%{ transform: translateY(0) translateX(0) rotate(0deg); opacity:0; }
+    10%{ opacity:0.6; }
+    100%{ transform: translateY(-115vh) translateX(var(--drift,20px)) rotate(20deg); opacity:0; }
+  }
+
+  /* ---------- teddy ---------- */
+  .teddy-wrap{
+    z-index:2;
+    margin-top: 6px;
+    animation: float 4s ease-in-out infinite;
+  }
+  @keyframes float{
+    0%,100%{ transform: translateY(0px); }
+    50%{ transform: translateY(-10px); }
+  }
+  .teddy-wrap svg{ width: 118px; height: auto; }
+
+  /* ---------- time / date ---------- */
+  .moment{
+    z-index:2;
+    text-align:center;
+    margin-top: 6px;
+  }
+  .time-1111{
+    font-family:'Fraunces', serif;
+    font-size: clamp(2.4rem, 8vw, 3.4rem);
+    font-weight:700;
+    letter-spacing: 2px;
+    color: var(--cream);
+    text-shadow: 0 0 18px rgba(155,93,229,0.7);
+  }
+  .date-line{
+    margin-top: 4px;
+    font-size: 1.05rem;
+    letter-spacing: 3px;
+    color: var(--pink);
+    font-weight:500;
+  }
+
+  /* ---------- login card ---------- */
+  .card{
+    z-index:2;
+    margin-top: 34px;
+    width: 100%;
+    max-width: 340px;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 22px;
+    padding: 30px 26px 26px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+  }
+  .card h1{
+    font-family:'Fraunces', serif;
+    font-size: 1.4rem;
+    text-align:center;
+    margin-bottom: 4px;
+    color: var(--cream);
+  }
+  .card p.sub{
+    text-align:center;
+    font-size:0.85rem;
+    color: rgba(253,246,255,0.65);
+    margin-bottom: 22px;
+  }
+  label{
+    display:block;
+    font-size:0.78rem;
+    letter-spacing:1px;
+    color: rgba(253,246,255,0.7);
+    margin-bottom: 6px;
+  }
+  .field{ margin-bottom: 16px; }
+  input{
+    width:100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(0,0,0,0.18);
+    color: var(--cream);
+    font-size: 0.95rem;
+    outline:none;
+    transition: border-color .2s ease, box-shadow .2s ease;
+  }
+  input:focus{
+    border-color: var(--pink);
+    box-shadow: 0 0 0 3px rgba(241,91,181,0.25);
+  }
+  button{
+    width:100%;
+    margin-top: 8px;
+    padding: 13px;
+    border:none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--pink), var(--light));
+    color: #1c0330;
+    font-weight:600;
+    font-size: 0.95rem;
+    letter-spacing:0.5px;
+    cursor:pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  button:active{ transform: scale(0.97); }
+  button:hover{ box-shadow: 0 8px 22px rgba(241,91,181,0.4); }
+
+  .btn-cancel{
+    margin-top: 10px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
+    color: rgba(253,246,255,0.85);
+    font-weight:500;
+    box-shadow:none;
+  }
+  .btn-cancel:hover{
+    background: rgba(255,255,255,0.06);
+    box-shadow:none;
+  }
+
+  .error{
+    margin-top: 12px;
+    text-align:center;
+    font-size: 0.8rem;
+    color: #ffb4d6;
+    min-height: 16px;
+  }
+
+  .success-overlay{
+    position:absolute;
+    inset:0;
+    background: radial-gradient(circle at 50% 40%, var(--mid), var(--deep));
+    display:none;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    text-align:center;
+    z-index:10;
+    padding: 20px;
+  }
+  .success-overlay h2{
+    font-family:'Fraunces', serif;
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+  }
+  .success-overlay p{
+    color: rgba(253,246,255,0.75);
+    font-size:0.9rem;
+  }
+</style>
 </head>
-
 <body>
+<div class="device">
+<div class="phone">
 
-<!-- ================= LOGIN PAGE ================= -->
+<div class="hearts" id="hearts"></div>
 
-<section id="loginPage" class="login-page">
+<div class="stage">
 
-    <div class="floating-heart heart1">♡</div>
-    <div class="floating-heart heart2">♡</div>
-    <div class="floating-heart heart3">♡</div>
-    <div class="floating-heart heart4">♡</div>
+  <div class="teddy-wrap">
+    <svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="furBody" cx="42%" cy="35%" r="75%">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="60%" stop-color="#f2eef5"/>
+          <stop offset="100%" stop-color="#d9cfe3"/>
+        </radialGradient>
+        <radialGradient id="furInner" cx="45%" cy="35%" r="75%">
+          <stop offset="0%" stop-color="#fff9fb"/>
+          <stop offset="100%" stop-color="#f0d7e6"/>
+        </radialGradient>
+        <linearGradient id="earShade" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="100%" stop-color="#e5dcee"/>
+        </linearGradient>
+        <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#2b0a4a" flood-opacity="0.35"/>
+        </filter>
+      </defs>
 
-    <div class="login-card">
+      <g filter="url(#softShadow)">
+        <circle cx="58" cy="50" r="25" fill="url(#earShade)"/>
+        <circle cx="162" cy="50" r="25" fill="url(#earShade)"/>
+        <circle cx="58" cy="50" r="12" fill="#f0c9dd"/>
+        <circle cx="162" cy="50" r="12" fill="#f0c9dd"/>
 
-        <div class="app-title">
-            ♡ <span>11:11</span> CHAT ♡
-        </div>
+        <ellipse cx="48" cy="168" rx="30" ry="26" fill="url(#furBody)"/>
+        <ellipse cx="172" cy="168" rx="30" ry="26" fill="url(#furBody)"/>
+        <ellipse cx="85" cy="195" rx="30" ry="22" fill="url(#furBody)"/>
+        <ellipse cx="135" cy="195" rx="30" ry="22" fill="url(#furBody)"/>
+        <ellipse cx="85" cy="200" rx="14" ry="9" fill="#f0d7e6"/>
+        <ellipse cx="135" cy="200" rx="14" ry="9" fill="#f0d7e6"/>
 
-        <div class="mini-text">
-            make a wish ✨
-        </div>
+        <circle cx="110" cy="95" r="62" fill="url(#furBody)"/>
+        <ellipse cx="110" cy="112" rx="34" ry="27" fill="url(#furInner)"/>
 
-        <!-- WHITE TEDDY -->
-        <div class="teddy-box">
+        <ellipse cx="90" cy="85" rx="6.5" ry="8" fill="#3a2540"/>
+        <ellipse cx="130" cy="85" rx="6.5" ry="8" fill="#3a2540"/>
+        <circle cx="92.5" cy="82" r="2" fill="#fff"/>
+        <circle cx="132.5" cy="82" r="2" fill="#fff"/>
 
-            <div class="teddy-glow"></div>
+        <ellipse cx="110" cy="103" rx="9" ry="6.5" fill="#3a2540"/>
+        <path d="M110 109 L110 116" stroke="#3a2540" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M92 123 Q110 136 128 123" stroke="#3a2540" stroke-width="3" fill="none" stroke-linecap="round"/>
 
-            <svg class="white-teddy"
-                 viewBox="0 0 220 250"
-                 xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="75" cy="105" rx="8" ry="5" fill="#f6bcd8" opacity="0.7"/>
+        <ellipse cx="145" cy="105" rx="8" ry="5" fill="#f6bcd8" opacity="0.7"/>
 
-                <!-- ears -->
-                <circle cx="55" cy="55" r="31"/>
-                <circle cx="165" cy="55" r="31"/>
+        <path d="M78 60 Q110 48 142 60" stroke="#e4d3ee" stroke-width="1.5" fill="none" stroke-dasharray="3 4"/>
 
-                <!-- ear inner -->
-                <circle class="ear-inner" cx="55" cy="55" r="17"/>
-                <circle class="ear-inner" cx="165" cy="55" r="17"/>
+        <path d="M110 60 l-14 -10 a7 7 0 1 0 -2 12 z" fill="#f15bb5"/>
+        <path d="M110 60 l14 -10 a7 7 0 1 1 2 12 z" fill="#f15bb5"/>
+        <circle cx="110" cy="60" r="5" fill="#c93f8f"/>
+      </g>
+    </svg>
+  </div>
 
-                <!-- head -->
-                <circle cx="110" cy="105" r="75"/>
+  <div class="moment">
+    <div class="time-1111">11:11</div>
+    <div class="date-line">15 • 09 • 2007</div>
+  </div>
 
-                <!-- body -->
-                <ellipse cx="110" cy="190" rx="65" ry="50"/>
+  <form class="card" id="loginForm" autocomplete="off">
+    <h1>Elango 💜</h1>
+    <p class="sub">Ippo login pannunga, unaku oru surprise wait pannudhu</p>
 
-                <!-- arms -->
-                <ellipse cx="43" cy="182"
-                         rx="23" ry="48"
-                         transform="rotate(25 43 182)"/>
-
-                <ellipse cx="177" cy="182"
-                         rx="23" ry="48"
-                         transform="rotate(-25 177 182)"/>
-
-                <!-- eyes -->
-                <circle class="teddy-eye" cx="82" cy="100" r="7"/>
-                <circle class="teddy-eye" cx="138" cy="100" r="7"/>
-
-                <!-- nose area -->
-                <ellipse class="nose-area"
-                         cx="110"
-                         cy="124"
-                         rx="29"
-                         ry="23"/>
-
-                <ellipse class="teddy-nose"
-                         cx="110"
-                         cy="119"
-                         rx="10"
-                         ry="8"/>
-
-                <!-- mouth -->
-                <path class="teddy-mouth"
-                      d="M110 127
-                         Q98 142 88 132
-                         M110 127
-                         Q122 142 132 132"/>
-
-                <!-- belly heart -->
-                <text x="110"
-                      y="202"
-                      text-anchor="middle"
-                      class="teddy-heart">♡</text>
-
-            </svg>
-
-        </div>
-
-        <div class="clock">
-            11:11
-        </div>
-
-        <p class="wish-text">
-            Make a wish & start chatting ✨
-        </p>
-
-        <!-- USERNAME -->
-        <div class="input-box">
-            <i class="fa-solid fa-user"></i>
-
-            <input type="text"
-                   id="username"
-                   placeholder="Enter username"
-                   autocomplete="off">
-        </div>
-
-        <!-- PASSWORD -->
-        <div class="input-box password-box">
-
-            <i class="fa-solid fa-lock"></i>
-
-            <input type="password"
-                   id="password"
-                   placeholder="Password"
-                   readonly>
-
-            <button type="button"
-                    class="show-password"
-                    onclick="togglePassword()">
-                <i id="eyeIcon"
-                   class="fa-solid fa-eye"></i>
-            </button>
-
-        </div>
-
-        <!-- NUMBER PAD -->
-        <div class="keypad-title">
-            enter your password ♡
-        </div>
-
-        <div class="number-pad">
-
-            <button onclick="pressNumber('1')">
-                <span>1</span>
-                <small>♡</small>
-            </button>
-
-            <button onclick="pressNumber('2')">
-                <span>2</span>
-                <small>♥</small>
-            </button>
-
-            <button onclick="pressNumber('3')">
-                <span>3</span>
-                <small>✦</small>
-            </button>
-
-            <button onclick="pressNumber('4')">
-                <span>4</span>
-                <small>♡</small>
-            </button>
-
-            <button onclick="pressNumber('5')">
-                <span>5</span>
-                <small>♥</small>
-            </button>
-
-            <button onclick="pressNumber('6')">
-                <span>6</span>
-                <small>✦</small>
-            </button>
-
-            <button onclick="pressNumber('7')">
-                <span>7</span>
-                <small>♡</small>
-            </button>
-
-            <button onclick="pressNumber('8')">
-                <span>8</span>
-                <small>♥</small>
-            </button>
-
-            <button onclick="pressNumber('9')">
-                <span>9</span>
-                <small>✦</small>
-            </button>
-
-            <button class="special-btn"
-                    onclick="clearPassword()">
-                <span>C</span>
-                <small>clear</small>
-            </button>
-
-            <button onclick="pressNumber('0')">
-                <span>0</span>
-                <small>♡</small>
-            </button>
-
-            <button class="special-btn"
-                    onclick="backspace()">
-                <span>⌫</span>
-                <small>back</small>
-            </button>
-
-        </div>
-
-        <!-- LOGIN -->
-        <button class="login-button"
-                onclick="login()">
-
-            <span>LOGIN</span>
-            <i class="fa-solid fa-heart"></i>
-
-        </button>
-
-        <p id="loginMessage"></p>
-
-        <div class="cute-bottom">
-            ♡ made with love ♡
-        </div>
-
+    <div class="field">
+      <label for="uname">USERNAME</label>
+      <input type="text" id="uname" placeholder="Enter username" />
     </div>
 
-</section>
-
-
-<!-- ================= CHAT PAGE ================= -->
-
-<section id="chatPage" class="chat-page hidden">
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-
-        <div class="sidebar-header">
-
-            <div class="profile-circle">
-                🧸
-            </div>
-
-            <div>
-                <h2>11:11 CHAT</h2>
-                <p id="currentUser">online ♡</p>
-            </div>
-
-            <button class="icon-btn"
-                    onclick="showOptions()">
-                <i class="fa-solid fa-ellipsis-vertical"></i>
-            </button>
-
-        </div>
-
-        <!-- SEARCH -->
-        <div class="search-box">
-
-            <i class="fa-solid fa-magnifying-glass"></i>
-
-            <input type="text"
-                   id="searchInput"
-                   placeholder="Search chats..."
-                   oninput="searchChats()">
-
-        </div>
-
-        <!-- CHAT LIST -->
-        <div class="chat-list"
-             id="chatList">
-
-            <div class="chat-item active"
-                 data-name="Anu"
-                 onclick="openChat('Anu','🩷')">
-
-                <div class="chat-avatar pink">A</div>
-
-                <div class="chat-info">
-                    <h3>Anu</h3>
-                    <p>Heyyy 🥹🩷</p>
-                </div>
-
-                <span class="online-dot"></span>
-
-            </div>
-
-
-            <div class="chat-item"
-                 data-name="Priya"
-                 onclick="openChat('Priya','💜')">
-
-                <div class="chat-avatar purple">P</div>
-
-                <div class="chat-info">
-                    <h3>Priya</h3>
-                    <p>Good morning ✨</p>
-                </div>
-
-                <span class="online-dot"></span>
-
-            </div>
-
-
-            <div class="chat-item"
-                 data-name="Kavin"
-                 onclick="openChat('Kavin','💙')">
-
-                <div class="chat-avatar blue">K</div>
-
-                <div class="chat-info">
-                    <h3>Kavin</h3>
-                    <p>Send that photo</p>
-                </div>
-
-            </div>
-
-
-            <div class="chat-item"
-                 data-name="Friends Group"
-                 onclick="openChat('Friends Group','👥')">
-
-                <div class="chat-avatar group">👥</div>
-
-                <div class="chat-info">
-                    <h3>Friends Group</h3>
-                    <p>Everyone: 😂😂</p>
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- SIDEBAR BOTTOM -->
-        <div class="sidebar-bottom">
-
-            <button onclick="startVoice()">
-                <i class="fa-solid fa-microphone"></i>
-                Voice
-            </button>
-
-            <button onclick="logout()">
-                <i class="fa-solid fa-right-from-bracket"></i>
-                Logout
-            </button>
-
-        </div>
-
-    </aside>
-
-
-    <!-- MAIN CHAT -->
-    <main class="chat-main">
-
-        <!-- CHAT HEADER -->
-        <header class="chat-header">
-
-            <button class="mobile-back"
-                    onclick="closeChat()">
-                <i class="fa-solid fa-arrow-left"></i>
-            </button>
-
-            <div id="activeAvatar"
-                 class="active-avatar">
-                🩷
-            </div>
-
-            <div class="active-user-info">
-
-                <h2 id="activeChatName">
-                    Anu
-                </h2>
-
-                <p id="typingStatus">
-                    online
-                </p>
-
-            </div>
-
-            <div class="chat-actions">
-
-                <button onclick="startVoice()"
-                        title="Voice call">
-                    <i class="fa-solid fa-phone"></i>
-                </button>
-
-                <button onclick="showOptions()"
-                        title="Options">
-                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                </button>
-
-            </div>
-
-        </header>
-
-
-        <!-- MESSAGES -->
-        <div class="messages"
-             id="messages">
-
-            <div class="date-label">
-                Today
-            </div>
-
-            <div class="message received">
-
-                <div class="message-bubble">
-                    Heyyy 🥹🩷
-                </div>
-
-                <span class="message-time">
-                    11:11 AM
-                </span>
-
-            </div>
-
-
-            <div class="message received">
-
-                <div class="message-bubble">
-                    How are you? ✨
-                </div>
-
-                <span class="message-time">
-                    11:12 AM
-                </span>
-
-            </div>
-
-
-            <div class="message sent">
-
-                <div class="message-bubble">
-                    I'm gooddd 🧸💕
-                </div>
-
-                <span class="message-time">
-                    11:13 AM ✓✓
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <!-- EMOJI PANEL -->
-        <div id="emojiPanel"
-             class="emoji-panel hidden">
-
-            <button onclick="addEmoji('❤️')">❤️</button>
-            <button onclick="addEmoji('🩷')">🩷</button>
-            <button onclick="addEmoji('💜')">💜</button>
-            <button onclick="addEmoji('💙')">💙</button>
-            <button onclick="addEmoji('🥹')">🥹</button>
-            <button onclick="addEmoji('😂')">😂</button>
-            <button onclick="addEmoji('😍')">😍</button>
-            <button onclick="addEmoji('😘')">😘</button>
-            <button onclick="addEmoji('🧸')">🧸</button>
-            <button onclick="addEmoji('✨')">✨</button>
-            <button onclick="addEmoji('🌸')">🌸</button>
-            <button onclick="addEmoji('♡')">♡</button>
-
-        </div>
-
-
-        <!-- IMAGE INPUT -->
-        <input type="file"
-               id="imageInput"
-               accept="image/*"
-               hidden
-               onchange="sendImage(event)">
-
-
-        <!-- MESSAGE INPUT -->
-        <div class="message-input-area">
-
-            <button class="input-action"
-                    onclick="toggleEmoji()">
-                😊
-            </button>
-
-            <button class="input-action"
-                    onclick="document.getElementById('imageInput').click()">
-                <i class="fa-regular fa-image"></i>
-            </button>
-
-            <input type="text"
-                   id="messageInput"
-                   placeholder="Type a message..."
-                   autocomplete="off"
-                   onkeydown="handleEnter(event)"
-                   oninput="showTyping()">
-
-            <button class="voice-button"
-                    onclick="startVoice()">
-                <i class="fa-solid fa-microphone"></i>
-            </button>
-
-            <button class="send-button"
-                    onclick="sendMessage()">
-                <i class="fa-solid fa-paper-plane"></i>
-            </button>
-
-        </div>
-
-    </main>
-
-</section>
-
-
-<!-- OPTIONS POPUP -->
-<div id="optionsPopup"
-     class="options-popup hidden">
-
-    <div class="options-card">
-
-        <button onclick="changeTheme()">
-            <i class="fa-solid fa-palette"></i>
-            Change theme
-        </button>
-
-        <button onclick="clearChat()">
-            <i class="fa-solid fa-trash"></i>
-            Clear chat
-        </button>
-
-        <button onclick="showAbout()">
-            <i class="fa-solid fa-heart"></i>
-            About 11:11
-        </button>
-
-        <button onclick="hideOptions()">
-            <i class="fa-solid fa-xmark"></i>
-            Close
-        </button>
-
+    <div class="field">
+      <label for="pword">PASSWORD</label>
+      <input type="password" id="pword" placeholder="Enter password" />
     </div>
 
+    <button type="submit">Login</button>
+    <button type="button" class="btn-cancel" id="cancelBtn">Cancel</button>
+    <div class="error" id="errMsg"></div>
+  </form>
 </div>
 
+<div class="success-overlay" id="successOverlay">
+  <h2>Welcome Elango 🎂💜</h2>
+  <p>Login success... surprise ready aaguthu!</p>
+</div>
 
-<script src="script.js"></script>
+</div>
+</div>
+<script>
+  const heartsContainer = document.getElementById('hearts');
+  const total = 22;
+  for(let i=0; i<total; i++){
+    const h = document.createElement('div');
+    h.className = 'heart';
+    h.textContent = '💜';
+    h.style.left = Math.random()*100 + '%';
+    h.style.fontSize = (14 + Math.random()*18) + 'px';
+    h.style.setProperty('--drift', (Math.random()*80 - 40) + 'px');
+    h.style.animationDuration = (6 + Math.random()*8) + 's';
+    h.style.animationDelay = (Math.random()*8) + 's';
+    heartsContainer.appendChild(h);
+  }
+
+  const pwordInput = document.getElementById('pword');
+
+  document.getElementById('cancelBtn').addEventListener('click', function(){
+    document.getElementById('uname').value = '';
+    pwordInput.value = '';
+    errMsg.textContent = '';
+  });
+
+  const loginForm = document.getElementById('loginForm');
+  const errMsg = document.getElementById('errMsg');
+  loginForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    const u = document.getElementById('uname').value.trim();
+    const p = pwordInput.value.trim();
+    if(u === 'Elango' && p === '15092007'){
+      errMsg.textContent = '';
+      document.getElementById('successOverlay').style.display = 'flex';
+      setTimeout(()=>{
+        // window.location.href = "index.html";
+      }, 1400);
+    } else {
+      errMsg.textContent = 'Username illa password thappu iruku, try again 💜';
+    }
+  });
+</script>
 
 </body>
 </html>
